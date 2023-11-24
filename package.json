@@ -1,0 +1,18 @@
+{
+  "name": "medifind_be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "vercel-build": "echo hello"
+  },
+  "author": "NVhung",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.3.4",
+    "express": "^4.18.2",
+    "openai": "^4.17.4",
+    "uuid": "^9.0.1"
+  }
+}
