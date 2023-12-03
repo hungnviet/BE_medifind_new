@@ -2,6 +2,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 import ahocorasick
 import json, pprint, time, re
+from fuzzywuzzy import process
 
 uri = "mongodb+srv://medifind:medifind@medifind.uezyqvq.mongodb.net/?retryWrites=true&w=majority"
 
@@ -17,6 +18,8 @@ except Exception as e:
 
 db = client["MediFind"]
 collection = db["Drug"]
+
+# daytime = ["sáng", "trưa", "chiều", "tối"]
 
 def load(collection):
     data = collection.find({})
@@ -42,11 +45,21 @@ def printInfo(name, collection):
     data = collection.find_one({"tenThuoc": name})
     pprint.pprint(data)
 
-def extDosage(text):
-    pattern = r"\b(sáng|trưa|chiều|tối)\s*(\d+)\s*viên"
-    matches = re.findall(pattern, text, re.IGNORECASE)
-    return {time: quantity for time, quantity in matches}
-
+def extract_dosages(section):
+    lines = section.strip().split("\n")
+    dosage_info = ' '.join(lines[0:])
+    
+    times = ["sáng", "trưa", "chiều", "tối"]
+    pattern = r"(\w+)\s*(\d+)\s*(\w+),?\s*([^,]*)"
+    matches = re.findall(pattern, dosage_info, re.IGNORECASE)
+    
+    dosage_dict = {}
+    for time, dosage, unit, extra_info in matches:
+        closest_match, score = process.extractOne(time, times)
+        if score >= 80:  # Adjust the score threshold as needed
+            dosage_dict[closest_match] = {'dosage': dosage, 'unit': unit, 'extra_info': extra_info.strip()}
+    
+    return dosage_dict
 
 def list(collection):
     names = load(collection)
@@ -56,9 +69,13 @@ def list(collection):
     with open(input, "r") as file:
         docText = file.read()
         # docText = docText.lower()
-
+    dosages = {}
     medNames = extract(docText, trie)
-    dosages = extDosage(docText)
+    sections = re.split(r"\d+\.", docText)[1:]  # Skip the first section as it does not contain medication info
+    for section in sections:
+        dosage_info = extract_dosages(section)
+        dosages.update(dosage_info)
+        
     return medNames, dosages
 
 if __name__ == "__main__":
@@ -67,5 +84,4 @@ if __name__ == "__main__":
     # for medicine in pred_names:
     #     printInfo(medicine, collection)
     
-    for time, (quantity, unit) in dosages.items():
-        print(f"Dosage in the {time}: {quantity} {unit}")
+    print(dosages)

@@ -1,2 +1,30 @@
-Dosage in the sáng: 0 1
-Dosage in the chiều: 0 1
+Medicine: Dexamethasone
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Paracetamol 500mg
+Info: [{}]
+
+Medicine: Dexamethason
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Dexamethasone 0,5mg
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Prednisolone 5mg
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Prednisolone
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Methylprednisolone
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Prednisolon
+Info: [{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': "sau khi ăn. HOẠẶC Prednisolone 5mg 'Uống ngày 01 lần: sáng 08 viên sau khi ăn (tương đương 40 mg/ngày)."}}]
+
+Medicine: Paracetamol
+Info: [{}]
+
+Medicine: Paracetamol 500
+Info: [{}]
+
