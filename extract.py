@@ -3,6 +3,9 @@ from pymongo.server_api import ServerApi
 import ahocorasick
 import json, pprint, time, re
 from fuzzywuzzy import process
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 uri = "mongodb+srv://medifind:medifind@medifind.uezyqvq.mongodb.net/?retryWrites=true&w=majority"
 
@@ -66,7 +69,7 @@ def list(collection):
     trie = build_trie(names)
 
     input = "doc.txt"
-    with open(input, "r") as file:
+    with open(input, "r", encoding="utf-8") as file:
         docText = file.read()
         # docText = docText.lower()
     dosages = {}
@@ -82,6 +85,7 @@ if __name__ == "__main__":
     pred_names, dosages = list(collection)
     
     # for medicine in pred_names:
-    #     printInfo(medicine, collection)
+    #printInfo(medicine, collection)
     
-    print(dosages)
+    with open("output.txt", "w", encoding="utf-8") as output_file:
+        output_file.write(str(dosages))
