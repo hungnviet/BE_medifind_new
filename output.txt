@@ -1,1 +1,0 @@
-{'chiều': {'dosage': '01', 'unit': 'viên', 'extra_info': '. dưu ~ - Toa thuốc này chỉ sử dụng cho người từ 18 tuổi trở lên.  - - Thuốc số Ï là thuốc có kiểm soát'}}
