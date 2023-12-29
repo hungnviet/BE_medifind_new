@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const { dirname, parse } = require('path');
-
 const app = express();
 app.use(express.json())
 /// SEARCH  ------------------------------------------------------------------------------------------------------------------------
@@ -84,42 +83,41 @@ const getReply = async (req, res) => {
 app
     .route("/api/v1/chatBot")
     .get(getReply)
-/// Reminder
-const listReminder =JSON.parse(fs.readFileSync(`${__dirname}/reminder.json`));
-const getSchedule=(req,res)=>{
-    const name=req.params.name;
-    
-    const data=name==="morning"?listReminder[0].morning:name==="noon"?listReminder[0].noon:listReminder[0].everning;
+/// Reminder-------------------------------------------------------------------------------------------------------------
+const listReminder = JSON.parse(fs.readFileSync(`${__dirname}/reminder.json`));
+const getSchedule = (req, res) => {
+    const name = req.params.name;
+
+    const data = name === "morning" ? listReminder[0].morning : name === "noon" ? listReminder[0].noon : listReminder[0].everning;
     res
-    .status(200)
-    .json({
-        status: "success",
-        data:{data}
-    })
+        .status(200)
+        .json({
+            status: "success",
+            data: { data }
+        })
 }
-const updateState=(req,res)=>{
-    const time=req.params.time;
-    const idIn=req.params.id;
-    const stateUpdated=req.params.stateUpdated;
-    const id= parseInt(idIn);
+const updateState = (req, res) => {
+    const time = req.params.time;
+    const idIn = req.params.id;
+    const stateUpdated = req.params.stateUpdated;
+    const id = parseInt(idIn);
     /*
     const listTask=time==="morning"?listReminder[0].morning:time=="noon"?listReminder[0].noon:listReminder[0].everning;
     const taskUpdated=listTask[id-1];
     taskUpdated.state=stateUpdated;
     khúc này có database thì đảy lên database
     */
-   const newList=listReminder;
-   if(time==="morning"){
-        newList[0].morning[id-1].state=stateUpdated;
+    const newList = listReminder;
+    if (time === "morning") {
+        newList[0].morning[id - 1].state = stateUpdated;
 
-   }
-   if(time==="morning"){
-    newList[0].noon[id-1].state=stateUpdated;
-    
     }
-    if(time==="morning")
-    {
-     newList[0].everning[id-1].state=stateUpdated;
+    if (time === "morning") {
+        newList[0].noon[id - 1].state = stateUpdated;
+
+    }
+    if (time === "morning") {
+        newList[0].everning[id - 1].state = stateUpdated;
     }
     fs.writeFile(`${__dirname}/reminder.json`, JSON.stringify(newList), err => {
         res
@@ -128,9 +126,30 @@ const updateState=(req,res)=>{
                 status: "succes",
             });
     });
-    
-}
 
+}
+/// Scan-----------------------------------------------------------------------------------------------
+const getScanResult = async (req, res) => {
+    /*
+    const fastApiSolvingImage = "/proccess_image/";
+    try {
+        const response = await fetch(fastApiSolvingImage, {
+            method: "POST",
+            body:
+
+        })
+    }
+    catch (error) {
+        res.status(500).json({ error: "Error solving image" });
+    }*/
+    console.log(req.body);
+    res
+        .status(200)
+        .json({
+            status: "success",
+        })
+
+}
 app
     .route("/api/v1/reminder/:name")
     .get(getSchedule)
@@ -138,7 +157,9 @@ app
     .route("/api/v1/reminder/:time/:id/:stateUpdated")
     .get(updateState)
 
-
+app
+    .route("/api/v1/scan")
+    .post(getScanResult)
 ///
 const port = 3000;
 app.listen(port, () => {

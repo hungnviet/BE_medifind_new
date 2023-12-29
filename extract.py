@@ -87,5 +87,6 @@ if __name__ == "__main__":
     # for medicine in pred_names:
     #printInfo(medicine, collection)
     
+    #write result in output.txt
     with open("output.txt", "w", encoding="utf-8") as output_file:
-        output_file.write(str(dosages))
+       output_file.write(str(dosages))
