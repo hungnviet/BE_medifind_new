@@ -51,7 +51,7 @@ def print_info(name, collection):
 def list(input, collection):
     names = load(collection)
     trie = build_trie(names)
-    with open(input, "r") as file:
+    with open(input, "r", encoding="utf-8") as file:
         docText = file.read()
 
     medNames = extract(docText, trie)

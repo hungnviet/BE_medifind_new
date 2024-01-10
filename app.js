@@ -129,27 +129,50 @@ const updateState = (req, res) => {
 
 }
 /// Scan-----------------------------------------------------------------------------------------------
-const getScanResult = async (req, res) => {
-    /*
-    const fastApiSolvingImage = "/proccess_image/";
+const handleOcrOuput = async (req, res) => {
     try {
-        const response = await fetch(fastApiSolvingImage, {
-            method: "POST",
-            body:
+        const ocrOutput = req.body;
+        const jsonString = JSON.stringify(ocrOutput);
+        fs.writeFile('./OCR/output_ocr.txt', jsonString, (err) => {
+            if (err) throw err
+        });
+        // run extract.js
+        // Run extract.js
+        require('child_process').exec('node ./NLP/extract.js', (error, stdout, stderr) => {
+            if (error) {
+                console.error('Error running extract.js:', error);
+                res.status(500).json({ error: 'Error running extract.js' });
+                return;
+            }
+            const fileContent = fs.readFileSync('./NLP/output_nlp.txt', 'utf-8');
+            const jsonArray = fileContent.split('\n').map((line) => {
+                const trimmedLine = line.trim();
+                if (trimmedLine !== '') {
+                    try {
+                        return JSON.parse(trimmedLine);
+                    } catch (parseError) {
+                        console.error('Error parsing line as JSON:', parseError);
+                        return null;
+                    }
+                }
+                return null;
+            }).filter(Boolean);
 
-        })
+            res.status(200).json(jsonArray);
+        });
+    } catch (error) {
+        console.error('Error handling OCR output:', error);
+        res.status(500).json({ error: 'Internal Server Error day ne' });
     }
-    catch (error) {
-        res.status(500).json({ error: "Error solving image" });
-    }*/
-    console.log(req.body);
-    res
-        .status(200)
-        .json({
-            status: "success",
-        })
 
 }
+
+app
+    .route("/api/v1/nlp")
+    .post(handleOcrOuput)
+
+
+
 app
     .route("/api/v1/reminder/:name")
     .get(getSchedule)
@@ -157,9 +180,6 @@ app
     .route("/api/v1/reminder/:time/:id/:stateUpdated")
     .get(updateState)
 
-app
-    .route("/api/v1/scan")
-    .post(getScanResult)
 ///
 const port = 3000;
 app.listen(port, () => {
