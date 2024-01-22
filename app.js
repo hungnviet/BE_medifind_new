@@ -1,4 +1,7 @@
 const express = require('express');
+const multer = require('multer');
+const FormData = require('form-data');
+const fetch = require('node-fetch');
 const fs = require('fs');
 const { dirname, parse } = require('path');
 const app = express();
@@ -45,7 +48,6 @@ app
     .get(getDrugWithName)
 //// CHAT BOT -------------------------------------------------------------------------------------------------------------------------------
 // Endpoint to get response from OpenAI API
-const fetch = require('node-fetch');
 
 const getReply = async (req, res) => {
     const content = Object.assign({ id: 1 }, req.body);
@@ -129,49 +131,52 @@ const updateState = (req, res) => {
 
 }
 /// Scan-----------------------------------------------------------------------------------------------
-const handleOcrOuput = async (req, res) => {
-    try {
-        const ocrOutput = req.body;
-        const jsonString = JSON.stringify(ocrOutput);
-        fs.writeFile('./OCR/output_ocr.txt', jsonString, (err) => {
-            if (err) throw err
-        });
-        // run extract.js
-        // Run extract.js
-        require('child_process').exec('node ./NLP/extract.js', (error, stdout, stderr) => {
-            if (error) {
-                console.error('Error running extract.js:', error);
-                res.status(500).json({ error: 'Error running extract.js' });
-                return;
-            }
-            const fileContent = fs.readFileSync('./NLP/output_nlp.txt', 'utf-8');
-            const jsonArray = fileContent.split('\n').map((line) => {
-                const trimmedLine = line.trim();
-                if (trimmedLine !== '') {
-                    try {
-                        return JSON.parse(trimmedLine);
-                    } catch (parseError) {
-                        console.error('Error parsing line as JSON:', parseError);
-                        return null;
-                    }
-                }
-                return null;
-            }).filter(Boolean);
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+const handleScan = async (req, res) => {
+    const file = req.file;
+    const formData = new FormData();
+    formData.append("file", file.buffer, { filename: file.originalname });
 
-            res.status(200).json(jsonArray);
+    const apiOcr = "http://127.0.0.1:8000/process_image";
+
+    try {
+        const response = await fetch(apiOcr, {
+            method: 'POST',
+            body: formData,
+            headers: formData.getHeaders(),
         });
+
+        if (!response.ok) {
+            console.log("Picture upload fail", response.status);
+            res.status(response.status).json({ error: "Picture upload failed" });
+        } else {
+            const jsonArray = await response.json();
+            console.log(jsonArray);
+            const result = [];
+            for (let i = 0; i < jsonArray.results.length; i++) {
+                const inforPobs = {
+                    ten: jsonArray.results[i].tenThuoc,
+                    hoatChatChinh: jsonArray.results[i].thongTinThuocCoBan ? jsonArray.results[i].thongTinThuocCoBan.hoatChatChinh : null,
+                    SDK: jsonArray.results[i].soDangKy,
+                    SQD: jsonArray.results[i].thongTinDangKyThuoc ? jsonArray.results[i].thongTinDangKyThuoc.soQuyetDinh : null,
+                    xuatSu: jsonArray.results[i].congTySanXuat ? jsonArray.results[i].congTySanXuat.nuocSanXuat : null,
+                    congTy: jsonArray.results[i].congTySanXuat ? jsonArray.results[i].congTySanXuat.tenCongTySanXuat : null,
+                    dangBaoChe: jsonArray.results[i].thongTinDangKyThuoc ? jsonArray.results[i].thongTinDangKyThuoc.dangBaoChe : null,
+                    diaChiSX: jsonArray.results[i].congTySanXuat ? jsonArray.results[i].congTySanXuat.diaChiSanXuat : null,
+                };
+                result.push(inforPobs);
+            }
+            res.status(200).json(result);
+        }
     } catch (error) {
-        console.error('Error handling OCR output:', error);
-        res.status(500).json({ error: 'Internal Server Error day ne' });
+        console.error(error);
+        res.status(500).json({ error: "An error occurred while processing the image" });
     }
 
 }
 
-app
-    .route("/api/v1/nlp")
-    .post(handleOcrOuput)
-
-
+app.post("/api/v1/nlp", upload.single('file'), handleScan);
 
 app
     .route("/api/v1/reminder/:name")
