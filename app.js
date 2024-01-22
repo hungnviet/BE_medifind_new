@@ -138,8 +138,8 @@ const handleScan = async (req, res) => {
     const formData = new FormData();
     formData.append("file", file.buffer, { filename: file.originalname });
 
-    const apiOcr = "http://127.0.0.1:8000/process_image";
-
+    const apiOcr = "https://medifind-ocr.proudsea-d3f4859a.eastasia.azurecontainerapps.io/process_image";
+    console.log("start");
     try {
         const response = await fetch(apiOcr, {
             method: 'POST',
@@ -152,7 +152,6 @@ const handleScan = async (req, res) => {
             res.status(response.status).json({ error: "Picture upload failed" });
         } else {
             const jsonArray = await response.json();
-            console.log(jsonArray);
             const result = [];
             for (let i = 0; i < jsonArray.results.length; i++) {
                 const inforPobs = {
